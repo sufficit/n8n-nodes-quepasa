@@ -1,19 +1,19 @@
 {
-  "name": "n8n-nodes-<...>",
+  "name": "@sufficit/n8n-nodes-quepasa",
   "version": "0.1.0",
-  "description": "",
+  "description": "This is an n8n community node. It lets you use Quepasa in your n8n workflows.",
   "keywords": [
     "n8n-community-node-package"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://www.sufficit.com.br",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Sufficit Soluções em Tecnologia da Informação",
+    "email": "contato@sufficit.com.br"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+    "url": "git+https://github.com/sufficit/n8n-nodes-quepasa.git"
   },
   "main": "index.js",
   "scripts": {
@@ -30,24 +30,35 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/ExampleCredentialsApi.credentials.js",
-      "dist/credentials/HttpBinApi.credentials.js"
+      "dist/credentials/QuepasaTokenAuthApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/ExampleNode/ExampleNode.node.js",
-      "dist/nodes/HttpBin/HttpBin.node.js"
+      "dist/nodes/Quepasa/Quepasa.node.js"
     ]
   },
   "devDependencies": {
     "@types/express": "^4.17.6",
+    "@types/lodash": "^4.14.185",
     "@types/request-promise-native": "~1.0.15",
     "@typescript-eslint/parser": "^5.29.0",
     "eslint-plugin-n8n-nodes-base": "^1.5.4",
     "gulp": "^4.0.2",
-    "n8n-core": "^0.125.0",
+    "lerna": "^5.5.2",
+    "n8n-core": "^0.135.0",
     "n8n-workflow": "^0.107.0",
     "prettier": "^2.7.1",
     "tslint": "^6.1.2",
     "typescript": "~4.6.0"
+  },
+  "bugs": {
+    "url": "https://github.com/sufficit/n8n-nodes-quepasa/issues"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "express": "^4.18.1",
+    "isbot": "^3.5.4",
+    "lodash": "^4.17.21"
   }
 }
