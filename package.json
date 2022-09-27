@@ -1,6 +1,6 @@
 {
   "name": "@sufficit/n8n-nodes-quepasa",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "This is an n8n community node. It lets you use Quepasa in your n8n workflows.",
   "keywords": [
     "n8n-community-node-package"
@@ -33,7 +33,8 @@
       "dist/credentials/QuepasaTokenAuthApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/Quepasa/Quepasa.node.js"
+      "dist/nodes/Quepasa/Quepasa.node.js",
+      "dist/nodes/Quepasa/QuepasaTrigger.node.ts"
     ]
   },
   "devDependencies": {
