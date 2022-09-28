@@ -1,13 +1,10 @@
 import {
-	IHookFunctions,
-	IWebhookFunctions,
-} from 'n8n-workflow';
-
-import {
 	IDataObject,
+	IHookFunctions,
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
+	IWebhookFunctions,
 	IWebhookResponseData,
 	NodeApiError,
 } from 'n8n-workflow';
@@ -19,14 +16,14 @@ import {
 
 import isbot from 'isbot';
 
-import type { Quepasa } from './types';
+import type { Quepasa as QTypes } from './types';
 
 export class QuepasaTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Quepasa Trigger',
 		name: 'quepasaTrigger',
 		// eslint-disable-next-line n8n-nodes-base/node-class-description-icon-not-svg
-		icon: 'file:quepasa.png',
+		icon: 'file:favicon.png',
 		group: ['trigger'],
 		version: 1,
 		description: 'Starts the workflow when Quepasa events occur',
@@ -38,7 +35,15 @@ export class QuepasaTrigger implements INodeType {
 		credentials: [
 			{
 				name: 'quepasaTokenAuthApi',
+				testedBy: 'quepasaTokenAuthApiTest',
 				required: true,
+				displayOptions: {
+					show: {
+						authentication: [
+							'predefinedCredentialType',
+						],
+					},
+				},
 			},
 		],
 		webhooks: [
@@ -50,6 +55,57 @@ export class QuepasaTrigger implements INodeType {
 			},
 		],
 		properties: [
+			{
+				displayName: 'Authentication',
+				name: 'authentication',
+				noDataExpression: true,
+				type: 'options',
+				required: true,
+				options: [
+					{
+						name: 'Parameters',
+						value: 'parametersCredentialType',
+					},
+					{
+						name: 'Predefined Quepasa Credentials',
+						value: 'predefinedCredentialType',
+						description: 'BaseUrl + Token',
+					},
+				],
+				default: 'parametersCredentialType',
+			},
+			{
+				displayName: 'BaseUrl',
+				name: 'baseUrl',
+				type: 'string',
+				default: '',
+				required: true,
+				description: 'Base URL',
+				placeholder: 'https://api.quepasa.org:31000',
+				displayOptions: {
+					show: {
+						authentication: [
+							'parametersCredentialType',
+						],
+					},
+				},
+			},
+			{
+				displayName: 'Token',
+				name: 'token',
+				type: 'string',
+				default: '',
+				required: true,
+				description: 'Token of Whatsapp bot, override credentials',
+				placeholder: '00000000-0000-0000-0000-000000000000',
+				displayOptions: {
+					show: {
+						authentication: [
+							'parametersCredentialType',
+						],
+					},
+				},
+			},
 			{
 				displayName: 'Show Headers',
 				name: 'showHeaders',
@@ -95,9 +151,9 @@ export class QuepasaTrigger implements INodeType {
 
 				// Check all the webhooks which exist already if it is identical to the
 				// one that is supposed to get created.
-				const response: Quepasa.GetWebhookResponse = await apiRequest.call(this, 'GET', '', {}, {}, undefined, headers);
+				const response: QTypes.GetWebhookResponse = await apiRequest.call(this, 'GET', '', {}, {}, undefined, headers);
 				if (!response.success) {
-					throw new NodeApiError(this.getNode(), response as Quepasa.Response);
+					throw new NodeApiError(this.getNode(), response as QTypes.Response);
 				}
 
 				response.webhooks?.forEach((webhook) => webhook.url === webhookUrl && webhook.forwardinternal === forwardInternal	&& webhook.trackid === trackId);
@@ -155,6 +211,7 @@ export class QuepasaTrigger implements INodeType {
 			const realm = 'Webhook';
 			const resp = this.getResponseObject();
 			const userAgent = (headers as IDataObject)['user-agent'] as string;
+
 			if (!userAgent.startsWith("Quepasa") && isbot(userAgent)) {
 				return authorizationError(resp, realm, 403);
 			}

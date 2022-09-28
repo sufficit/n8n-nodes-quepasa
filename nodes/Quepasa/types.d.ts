@@ -1,11 +1,3 @@
-import {
-	IDataObject,
-} from 'n8n-workflow';
-
-import {
-	OptionsWithUri,
-} from 'request';
-
 export declare namespace Quepasa {
 
 	export type Resource = 'information' | 'message' | 'webhook';

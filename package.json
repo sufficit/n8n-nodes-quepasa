@@ -1,9 +1,12 @@
 {
   "name": "@sufficit/n8n-nodes-quepasa",
-  "version": "0.1.1",
+  "version": "0.1.8",
   "description": "This is an n8n community node. It lets you use Quepasa in your n8n workflows.",
   "keywords": [
-    "n8n-community-node-package"
+    "n8n-community-node-package",
+    "whatsapp",
+    "quepasa",
+    "sufficit"
   ],
   "license": "MIT",
   "homepage": "https://www.sufficit.com.br",
@@ -34,7 +37,7 @@
     ],
     "nodes": [
       "dist/nodes/Quepasa/Quepasa.node.js",
-      "dist/nodes/Quepasa/QuepasaTrigger.node.ts"
+      "dist/nodes/Quepasa/QuepasaTrigger.node.js"
     ]
   },
   "devDependencies": {

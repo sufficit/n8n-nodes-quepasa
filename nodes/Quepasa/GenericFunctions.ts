@@ -1,23 +1,18 @@
 import {
+	IDataObject,
 	IExecuteFunctions,
 	IHookFunctions,
 	ILoadOptionsFunctions,
+	NodeApiError,
 } from 'n8n-workflow';
 
 import {
 	OptionsWithUri,
 } from 'request';
 
-import {
-	IDataObject,
-	NodeApiError,
-} from 'n8n-workflow';
+import { get } from 'lodash';
 
-import {
-	get,
-} from 'lodash';
-
-import type { Quepasa } from './types';
+import type { Quepasa as QTypes } from './types';
 
 // used from webhook authorization, avoid bots
 import { Response } from 'express';
@@ -28,12 +23,12 @@ class RequestError extends Error {
 	}
 }
 
-export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions, method: string, endpoint: Quepasa.Endpoint = '', body: any = {}, qs: IDataObject = {}, uri?: string, headers: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
+export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions, method: string, endpoint: QTypes.Endpoint = '', body: any = {}, qs: IDataObject = {}, uri?: string, headers: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
 	let baseUrl = this.getNodeParameter('baseUrl', 0, '') as string;
 	let token = this.getNodeParameter('token', 0, '') as string;
 
 	if (!baseUrl || !token) {
-		const credentials = await this.getCredentials('quepasaTokenAuthApi') as Quepasa.PathCredentials;
+		const credentials = await this.getCredentials('quepasaTokenAuthApi') as QTypes.PathCredentials;
 		baseUrl = baseUrl || credentials.baseUrl;
 		token = token || credentials.accessToken;
 	}
@@ -112,7 +107,7 @@ export function authorizationError(resp: Response, realm: string, responseCode: 
 	};
 }
 
-export function requestBotInfo(credentials: Quepasa.PathCredentials){
+export function requestBotInfo(credentials: QTypes.PathCredentials){
 	let baseUrl = credentials.baseUrl;
 	if (baseUrl.endsWith("/")){
 		baseUrl = baseUrl.slice(0, -1);

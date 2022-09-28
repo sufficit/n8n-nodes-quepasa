@@ -24,14 +24,14 @@ import {
 	requestBotInfo,
 } from './GenericFunctions';
 
-import type { Quepasa as Types } from './types';
+import type { Quepasa as QTypes } from './types';
 
 export class Quepasa implements INodeType {
 	description: INodeTypeDescription = {
 			displayName: 'Quepasa (Whatsapp)',
 			name: 'quepasa',
 			// eslint-disable-next-line n8n-nodes-base/node-class-description-icon-not-svg
-			icon: 'file:quepasa.png',
+			icon: 'file:favicon.png',
 			group: ['output'],
 			version: 1,
 			subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -157,7 +157,7 @@ export class Quepasa implements INodeType {
 				this: ICredentialTestFunctions,
 				credential: ICredentialsDecrypted,
 			): Promise<INodeCredentialTestResult> {
-				const credentials = credential.data as Types.PathCredentials;
+				const credentials = credential.data as QTypes.PathCredentials;
 				const options = requestBotInfo(credentials);
 				try {
 					await this.helpers.request(options);
@@ -177,7 +177,7 @@ export class Quepasa implements INodeType {
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
-		const resource = this.getNodeParameter('resource', 0) as Types.Resource;
+		const resource = this.getNodeParameter('resource', 0) as QTypes.Resource;
 		const operation = this.getNodeParameter('operation', 0) as string;
 		const returnData: IDataObject[] = [];
 
