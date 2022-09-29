@@ -186,7 +186,7 @@ export class QuepasaTrigger implements INodeType {
 					throw new NodeApiError(this.getNode(), response as QModels.Response);
 				}
 
-				response.webhooks?.forEach((item) => { if(item == webhook) return true; });
+				response.webhooks?.forEach((item) => { if(item === webhook) return true; });
 				return false;
 			},
 
