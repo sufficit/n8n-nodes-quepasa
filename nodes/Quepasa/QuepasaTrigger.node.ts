@@ -12,11 +12,12 @@ import {
 import {
 	apiRequest,
 	authorizationError,
+	createWebHookFromTrigger,
 } from './GenericFunctions';
 
 import isbot from 'isbot';
 
-import type { Quepasa as QTypes } from './types';
+import type { Quepasa as QModels } from './types';
 
 export class QuepasaTrigger implements INodeType {
 	description: INodeTypeDescription = {
@@ -134,6 +135,38 @@ export class QuepasaTrigger implements INodeType {
 					},
 				},
 			},
+			{
+				displayName: 'Extra Attributes',
+				name: 'extraAttributes',
+				placeholder: 'Add Attributes',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				default: {},
+				options: [
+					{
+						name: 'attribute',
+						displayName: 'Attributes',
+						values: [
+							{
+								displayName: 'Key',
+								name: 'key',
+								type: 'string',
+								default: '',
+								description: 'Key of the attribute',
+							},
+							{
+								displayName: 'Value',
+								name: 'value',
+								type: 'string',
+								default: '',
+								description: 'Value to set for the attribute',
+							},
+						],
+					},
+				],
+			},
 		],
 	};
 
@@ -141,38 +174,27 @@ export class QuepasaTrigger implements INodeType {
 	webhookMethods = {
 		default: {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
-				const webhookUrl = this.getNodeWebhookUrl('default');
-				const forwardInternal = this.getNodeParameter('forwardInternal') as boolean;
-				const trackId = this.getNodeParameter('trackId') as string;
-
+				const webhook : QModels.Webhook = createWebHookFromTrigger(this);
 				const headers: IDataObject = {
-					'X-QUEPASA-WHURL': webhookUrl,
+					'X-QUEPASA-WHURL': webhook.url,
 				};
 
 				// Check all the webhooks which exist already if it is identical to the
 				// one that is supposed to get created.
-				const response: QTypes.GetWebhookResponse = await apiRequest.call(this, 'GET', '', {}, {}, undefined, headers);
+				const response: QModels.GetWebhookResponse = await apiRequest.call(this, 'GET', '', {}, {}, undefined, headers);
 				if (!response.success) {
-					throw new NodeApiError(this.getNode(), response as QTypes.Response);
+					throw new NodeApiError(this.getNode(), response as QModels.Response);
 				}
 
-				response.webhooks?.forEach((webhook) => webhook.url === webhookUrl && webhook.forwardinternal === forwardInternal	&& webhook.trackid === trackId);
+				response.webhooks?.forEach((item) => { if(item == webhook) return true; });
 				return false;
 			},
 
 			async create(this: IHookFunctions): Promise<boolean> {
 				const webhookData = this.getWorkflowStaticData('node');
-				const webhookUrl = this.getNodeWebhookUrl('default');
-				const forwardInternal = this.getNodeParameter('forwardInternal') as boolean;
-				const trackId = this.getNodeParameter('trackId') as string;
 
-				const body = {
-					url: webhookUrl,
-					forwardinternal: forwardInternal,
-					trackid: trackId,
-				};
-
-				const responseData = await apiRequest.call(this, 'POST', '/webhook', body);
+				const webhook : QModels.Webhook = createWebHookFromTrigger(this);
+				const responseData = await apiRequest.call(this, 'POST', '/webhook', webhook);
 				if (responseData.id === undefined) {
 					// Required data is missing so was not successful
 					return false;

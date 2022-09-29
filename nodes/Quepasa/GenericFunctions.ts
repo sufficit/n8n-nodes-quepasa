@@ -120,3 +120,25 @@ export function requestBotInfo(credentials: QTypes.PathCredentials){
 	};
 	return options;
 }
+
+export function createWebHookFromTrigger(source: IHookFunctions): QTypes.Webhook {
+	const reponse : QTypes.Webhook = {
+		url: source.getNodeWebhookUrl('default')!,
+		forwardinternal: source.getNodeParameter('forwardInternal', false) as boolean,
+		trackid: source.getNodeParameter('trackId', '') as string ?? undefined,
+	};
+
+	const parExtraAttributes = source.getNodeParameter('extraAttributes', {}) as IDataObject;
+	if (parExtraAttributes && parExtraAttributes.attribute) {
+		const data: IDataObject = {}; // tslint:disable-line:no-any
+
+		const atts = parExtraAttributes.attribute as IDataObject[];
+		atts.map(property => {
+			data[property.key as string] = property.value;
+		});
+
+		reponse.extra = data;
+	}
+
+	return reponse;
+}

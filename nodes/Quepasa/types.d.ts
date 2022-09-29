@@ -28,6 +28,7 @@ export declare namespace Quepasa {
 		forwardinternal?: boolean;
 		trackid?: string;
 		success?: Date;
+		extra?: any;
 	}
 
 	// --------------------------------------------------------------------------
