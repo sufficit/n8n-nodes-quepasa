@@ -122,7 +122,7 @@ export function requestBotInfo(credentials: QTypes.PathCredentials){
 }
 
 export function createWebHookFromTrigger(source: IHookFunctions): QTypes.Webhook {
-	const reponse : QTypes.Webhook = {
+	const reqBody : QTypes.Webhook = {
 		url: source.getNodeWebhookUrl('default')!,
 		forwardinternal: source.getNodeParameter('forwardInternal', false) as boolean,
 		trackid: source.getNodeParameter('trackId', '') as string ?? undefined,
@@ -137,8 +137,8 @@ export function createWebHookFromTrigger(source: IHookFunctions): QTypes.Webhook
 			data[property.key as string] = property.value;
 		});
 
-		reponse.extra = data;
+		reqBody.extra = data;
 	}
 
-	return reponse;
+	return reqBody;
 }

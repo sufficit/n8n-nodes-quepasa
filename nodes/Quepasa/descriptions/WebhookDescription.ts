@@ -97,4 +97,46 @@ export const webhookFields: INodeProperties[] = [
 			},
 		},
 	},
+	{
+		displayName: 'Extra Attributes',
+		name: 'extraAttributes',
+		placeholder: 'Add Attributes',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		default: {},
+		displayOptions: {
+			show: {
+				resource: [
+					'webhook',
+				],
+				operation: [
+					'setup',
+				],
+			},
+		},
+		options: [
+			{
+				name: 'attribute',
+				displayName: 'Attributes',
+				values: [
+					{
+						displayName: 'Key',
+						name: 'key',
+						type: 'string',
+						default: '',
+						description: 'Key of the attribute',
+					},
+					{
+						displayName: 'Value',
+						name: 'value',
+						type: 'string',
+						default: '',
+						description: 'Value to set for the attribute',
+					},
+				],
+			},
+		],
+	},
 ];
