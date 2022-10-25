@@ -10,11 +10,13 @@ import {
 } from 'n8n-workflow';
 
 import {
+	controlDescription, controlFields,
 	messageDescription, messageFields,
 	webhookDescription, webhookFields,
 } from './descriptions';
 
 import {
+	resourceControl,
 	resourceMessage,
 	resourceWebhook,
 } from './methods';
@@ -125,6 +127,10 @@ export class Quepasa implements INodeType {
 							name: 'Webhook',
 							value: 'webhook',
 						},
+						{
+							name: 'Control',
+							value: 'control',
+						},
 					],
 					default: 'message',
 					required: true,
@@ -144,6 +150,8 @@ export class Quepasa implements INodeType {
 					default: 'information',
 					required: true,
 				},
+				...controlDescription,
+				...controlFields,
 				...messageDescription,
 				...messageFields,
 				...webhookDescription,
@@ -185,13 +193,16 @@ export class Quepasa implements INodeType {
 			let responseData;
 			try {
 				if (resource === 'information'){
-					responseData = await apiRequest.call(this, 'GET');
+					responseData = await apiRequest.call(this, 'GET', '/info');
 				}
 				else if (resource === 'message') {
 					responseData = await resourceMessage.call(this, operation, items, i);
 				}
 				else if (resource === 'webhook') {
 					responseData = await resourceWebhook.call(this, operation, items, i);
+				}
+				else if (resource === 'control') {
+					responseData = await resourceControl.call(this, operation, items, i);
 				}
 
 				if (Array.isArray(responseData)) {
@@ -201,7 +212,7 @@ export class Quepasa implements INodeType {
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
-					if (operation === 'download') {
+					if (operation === 'download' || items[i].binary) {
 						items[i].json = { error: error.message };
 					} else {
 						returnData.push({ error: error.message });
