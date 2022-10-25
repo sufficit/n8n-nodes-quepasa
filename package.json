@@ -1,7 +1,7 @@
 {
   "name": "@sufficit/n8n-nodes-quepasa",
-  "version": "0.1.16",
-  "description": "This is an n8n community node. It lets you use Quepasa in your n8n workflows.",
+  "version": "0.1.19",
+  "description": "This is an n8n community node. It lets you use Quepasa in your n8n workflows. (use with Quepasa >= v4)",
   "keywords": [
     "n8n-community-node-package",
     "whatsapp",

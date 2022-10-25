@@ -1,7 +1,7 @@
 export declare namespace Quepasa {
 
-	export type Resource = 'information' | 'message' | 'webhook';
-	export type Endpoint = '' | '/webhook' | '/download' | '/sendtext' | '/sendurl';
+	export type Resource = 'information' | 'message' | 'webhook' | 'control';
+	export type Endpoint = '' | '/info' | '/webhook' | '/download' | '/sendtext' | '/sendurl' | '/picinfo' | '/picdata' | '/invite';
 
 	export type PathCredentials = {
 		baseUrl: string;

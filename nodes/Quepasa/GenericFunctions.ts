@@ -33,17 +33,18 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 		token = token || credentials.accessToken;
 	}
 
-	const fullUri = baseUrl + `/v3/bot/${token}${endpoint}`;
+	const fullUri = baseUrl + `${endpoint}`;
 	const options: OptionsWithUri = {
 		headers: {
 			Accept: 'application/json',
+			'X-QUEPASA-TOKEN': token,
 		},
 		method,
 		qs,
 		uri: uri || fullUri,
 	};
 
-	if (endpoint === '/download') {
+	if (endpoint === '/download' || endpoint === '/picdata') {
 		options.encoding = null;
 	} else {
 		options.json = true;
@@ -115,7 +116,11 @@ export function requestBotInfo(credentials: QTypes.PathCredentials){
 
 	const options: OptionsWithUri = {
 		method: 'GET',
-		uri: `${baseUrl}/v3/bot/${credentials.accessToken}`,
+		headers: {
+			Accept: 'application/json',
+			'X-QUEPASA-TOKEN': credentials.accessToken,
+		},
+		uri: baseUrl,
 		json: true,
 	};
 	return options;
