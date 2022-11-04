@@ -41,8 +41,10 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 	};
 
 	if (endpoint === '/download' || endpoint === '/picdata') {
-		options.encoding = undefined;
+		options.encoding = 'arraybuffer';
+		options.json = false;
 	} else {
+		options.encoding = 'json';
 		options.json = true;
 	}
 
@@ -60,13 +62,13 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 	}
 
 	try {
-		const responseData: IN8nHttpResponse = await this.helpers.httpRequest(options);
+		const response: IN8nHttpResponse = await this.helpers.httpRequest(options);
 		if (endpoint === '/download' || endpoint === '/picdata') {
 			return {
-				data: responseData,
+				data: response,
 			};
 		}
-		return responseData;
+		return response;
 	} catch (error) {
 		if (error.response?.data) {
 			const requestError: QTypes.RequestError = {
