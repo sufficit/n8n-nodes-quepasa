@@ -48,4 +48,7 @@ export declare namespace Quepasa {
 	//
 	// --------------------------------------------------------------------------
 
+	export type RequestError = Error & Response & {
+		config: any;
+	};
 }

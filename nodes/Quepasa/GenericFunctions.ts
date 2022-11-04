@@ -2,8 +2,10 @@ import {
 	IDataObject,
 	IExecuteFunctions,
 	IHookFunctions,
+	IHttpRequestMethods,
+	IHttpRequestOptions,
 	ILoadOptionsFunctions,
-	NodeApiError,
+	IN8nHttpResponse,
 } from 'n8n-workflow';
 
 import {
@@ -17,13 +19,7 @@ import type { Quepasa as QTypes } from './types';
 // used from webhook authorization, avoid bots
 import { Response } from 'express';
 
-class RequestError extends Error {
-	constructor(public options: OptionsWithUri, status: number, message: string) {
-		super(message);
-	}
-}
-
-export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions, method: string, endpoint: QTypes.Endpoint = '', body: any = {}, qs: IDataObject = {}, uri?: string, headers: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
+export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions, method: IHttpRequestMethods, endpoint: QTypes.Endpoint = '', body: any = {}, qs: IDataObject = {}, uri?: string, headers: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
 	let baseUrl = this.getNodeParameter('baseUrl', 0, '') as string;
 	let token = this.getNodeParameter('token', 0, '') as string;
 
@@ -34,18 +30,18 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 	}
 
 	const fullUri = baseUrl + `${endpoint}`;
-	const options: OptionsWithUri = {
+	const options: IHttpRequestOptions = {
 		headers: {
 			Accept: 'application/json',
 			'X-QUEPASA-TOKEN': token,
 		},
 		method,
 		qs,
-		uri: uri || fullUri,
+		url: uri || fullUri,
 	};
 
 	if (endpoint === '/download' || endpoint === '/picdata') {
-		options.encoding = null;
+		options.encoding = undefined;
 	} else {
 		options.json = true;
 	}
@@ -64,21 +60,25 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 	}
 
 	try {
-		const responseData = await this.helpers.request!(options);
-		if (endpoint === '/download') {
+		const responseData: IN8nHttpResponse = await this.helpers.httpRequest(options);
+		if (endpoint === '/download' || endpoint === '/picdata') {
 			return {
 				data: responseData,
 			};
 		}
-
-		if (responseData.success === false) {
-			throw new NodeApiError(this.getNode(), responseData);
-		}
-
 		return responseData;
 	} catch (error) {
-		error = new RequestError(options, error.status, error.message);
-		throw new NodeApiError(this.getNode(), error);
+		if (error.response?.data) {
+			const requestError: QTypes.RequestError = {
+				success: false,
+				status: error.response.data.status,
+				name: error.name,
+				message: error.message,
+				config: error.config,
+			};
+			throw requestError;
+		}
+		throw error;
 	}
 }
 

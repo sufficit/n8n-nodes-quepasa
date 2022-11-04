@@ -7,6 +7,7 @@ import {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
+	NodeApiError,
 } from 'n8n-workflow';
 
 import {
@@ -212,14 +213,14 @@ export class Quepasa implements INodeType {
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
-					if (operation === 'download' || items[i].binary) {
+					if (operation === 'download' || operation === 'picdata' || items[i].binary) {
 						items[i].json = { error: error.message };
 					} else {
-						returnData.push({ error: error.message });
+						returnData.push(error);
 					}
 					continue;
 				}
-				throw error;
+				throw new NodeApiError(this.getNode(), error);
 			}
 		}
 

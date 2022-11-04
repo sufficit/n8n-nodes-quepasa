@@ -47,9 +47,10 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 		const paramText = 	this.getNodeParameter('text', i, '')	as string;
 		const paramTrackId = this.getNodeParameter('trackId', i, '') as string;
 
-		const headers: IDataObject = {
-			'X-QUEPASA-TRACKID': paramTrackId,
-		};
+		const headers: IDataObject = {};
+		if (paramTrackId && paramTrackId.trim().length > 0) {
+			headers['X-QUEPASA-TRACKID'] = paramTrackId;
+		}
 
 		if (paramMethod === 'sendtext') {
 			const body: Quepasa.SendRequest = {
