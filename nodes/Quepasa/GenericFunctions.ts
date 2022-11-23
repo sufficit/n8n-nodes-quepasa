@@ -38,6 +38,7 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 		method,
 		qs,
 		url: uri || fullUri,
+		timeout: 15000, // changing default timeout to 15 seconds. avoid thread lock
 	};
 
 	if (endpoint === '/download' || endpoint === '/picdata') {
