@@ -3,6 +3,7 @@ import {
 	ICredentialTestFunctions,
 	IDataObject,
 	IExecuteFunctions,
+	IN8nHttpFullResponse,
 	INodeCredentialTestResult,
 	INodeExecutionData,
 	INodeType,
@@ -194,7 +195,8 @@ export class Quepasa implements INodeType {
 			let responseData;
 			try {
 				if (resource === 'information'){
-					responseData = await apiRequest.call(this, 'GET', '/info');
+					const fullResponse = await apiRequest.call(this, 'GET', '/info');
+					responseData = fullResponse.body;
 				}
 				else if (resource === 'message') {
 					responseData = await resourceMessage.call(this, operation, items, i);

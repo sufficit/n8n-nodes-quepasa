@@ -2,22 +2,25 @@ import {
 	IBinaryKeyData,
 	IDataObject,
 	IExecuteFunctions,
+	IN8nHttpFullResponse,
 	INodeExecutionData,
 } from 'n8n-workflow';
 
 import {
 	apiRequest,
+	getFileNameFromHeaderContent,
 } from '../GenericFunctions';
 
-import type { Quepasa } from '../types';
+import type { Quepasa as QTypes } from '../types';
 
 export async function resourceMessage(this: IExecuteFunctions, operation: string, items: INodeExecutionData[], i: number): Promise<any> { // tslint:disable-line:no-any
-	let responseData;
+
+	let fullResponse: IN8nHttpFullResponse;
 	if (operation === 'download') {
 		const qs: IDataObject = {};
 		const objectId = this.getNodeParameter('messageId', i) as string;
 		qs.id = objectId;
-		responseData = await apiRequest.call(this, 'GET', '/download', {}, qs);
+		fullResponse = await apiRequest.call(this, 'GET', '/download', {}, qs);
 
 		const itemsData: IBinaryKeyData = {};
 
@@ -28,18 +31,21 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 			Object.assign(itemsData, items[i].binary);
 		}
 
+		let fileName: string | undefined = this.getNodeParameter('fileName', i) as string;
+		if (!fileName) {
+			fileName = getFileNameFromHeaderContent(fullResponse.headers);
+		}
+
+		const binaryData = await this.helpers.prepareBinaryData(fullResponse.body, fileName || "unknownFileName");
+		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+
 		const responseItem: INodeExecutionData = {
 			json: items[i].json,
 			binary: itemsData,
 		};
-
+		responseItem.binary![binaryPropertyName] = binaryData;
 		items[i] = responseItem;
-
-		const fileName = this.getNodeParameter('fileName', i) as string;
-		const binaryData = await this.helpers.prepareBinaryData(responseData.data, fileName || "unknownFileName");
-
-		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-		items[i].binary![binaryPropertyName] = binaryData;
+		return;
 	}
 	else if (operation === 'send'){
 		const paramMethod =	this.getNodeParameter('method', i)		as string;
@@ -53,32 +59,37 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 		}
 
 		if (paramMethod === 'sendtext') {
-			const body: Quepasa.SendRequest = {
+			const body: QTypes.SendRequest = {
 				text: paramText,
 				chatid: paramChatId,
 			};
-			responseData = await apiRequest.call(this, 'POST', '/sendtext', body, {}, undefined, headers);
+
+			fullResponse = await apiRequest.call(this, 'POST', '/sendtext', body, {}, undefined, headers);
 		}
 		else if (paramMethod === 'sendurl') {
 			const paramUrl = this.getNodeParameter('url', i) as string;
 			const paramFileName = this.getNodeParameter('filename', i, '') as string;
-			const body: Quepasa.SendAttachmentUrlRequest = {
+			const body: QTypes.SendAttachmentUrlRequest = {
 				chatid: paramChatId,
 				url: paramUrl,
 				text: paramText,
 				filename: paramFileName,
 			};
-			responseData = await apiRequest.call(this, 'POST', '/sendurl', body, {}, undefined, headers);
+
+			fullResponse = await apiRequest.call(this, 'POST', '/sendurl', body, {}, undefined, headers);
 		} else {
-			throw new Error('Method not implemented.');
+			throw new Error('Method not implemented: ' + paramMethod);
 		}
 	}
 	else if (operation === 'where') {
-		throw new Error('Method not implemented.');
+		throw new Error('Operation not implemented: ' + operation);
 	}
 	else if (operation === 'find') {
-		throw new Error('Method not implemented.');
+		throw new Error('Operation not implemented: ' + operation);
+	}
+	else {
+		throw new Error('Operation not implemented: ' + operation);
 	}
 
-	return responseData;
+	return fullResponse?.body;
 }

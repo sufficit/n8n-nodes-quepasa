@@ -17,7 +17,7 @@ import {
 
 import isbot from 'isbot';
 
-import type { Quepasa as QModels } from './types';
+import type { Quepasa as QTypes } from './types';
 
 export class QuepasaTrigger implements INodeType {
 	description: INodeTypeDescription = {
@@ -108,13 +108,6 @@ export class QuepasaTrigger implements INodeType {
 				},
 			},
 			{
-				displayName: 'Show Headers',
-				name: 'showHeaders',
-				type: 'boolean',
-				default: true,
-				description: 'Whether should get header parameters',
-			},
-			{
 				displayName: 'Forward Internal',
 				name: 'forwardInternal',
 				type: 'boolean',
@@ -174,86 +167,105 @@ export class QuepasaTrigger implements INodeType {
 	webhookMethods = {
 		default: {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
-				const webhook : QModels.Webhook = createWebHookFromTrigger(this);
-				const headers: IDataObject = {
-					'X-QUEPASA-WHURL': webhook.url,
-				};
+				const webhookData = this.getWorkflowStaticData('node');
 
-				// Check all the webhooks which exist already if it is identical to the
-				// one that is supposed to get created.
-				const response: QModels.GetWebhookResponse = await apiRequest.call(this, 'GET', '', {}, {}, undefined, headers);
-				if (!response.success) {
-					throw new NodeApiError(this.getNode(), response as QModels.Response);
+				if (webhookData.webhookUrl === undefined) {
+					// No webhook id is set so no webhook can exist
+					return false;
 				}
 
-				response.webhooks?.forEach((item) => { if(item === webhook) return true; });
-				return false;
+				try {
+					const webhook : QTypes.Webhook = createWebHookFromTrigger(this);
+					const headers: IDataObject = {
+						'X-QUEPASA-WHURL': webhook.url,
+					};
+
+					// Check all the webhooks which exist already if it is identical to the
+					// one that is supposed to get created.
+					const fullResponse = await apiRequest.call(this, 'GET', '/webhook', {}, {}, undefined, headers);
+					if (fullResponse.statusCode !== 200){
+						throw new NodeApiError(this.getNode(), { httpCode: fullResponse.statusCode , message: fullResponse.statusMessage ?? "invalid request" });
+					}
+
+					const response = fullResponse.body as QTypes.WebhookGetResponse;
+					if (!response.success) {
+						throw new NodeApiError(this.getNode(), response as QTypes.Response);
+					}
+
+					response.webhooks?.forEach((item) => { if(item === webhook) return true; });
+					return false;
+				} catch {
+					return false;
+				}
 			},
 
 			async create(this: IHookFunctions): Promise<boolean> {
 				const webhookData = this.getWorkflowStaticData('node');
-
-				const webhook : QModels.Webhook = createWebHookFromTrigger(this);
-				const responseData = await apiRequest.call(this, 'POST', '/webhook', webhook);
-				if (responseData.id === undefined) {
-					// Required data is missing so was not successful
-					return false;
-				}
-
-				webhookData.webhookId = responseData.id as string;
-				return true;
-			},
-			async delete(this: IHookFunctions): Promise<boolean> {
-				const webhookUrl = this.getNodeWebhookUrl('default');
-				const body = { url: webhookUrl, };
+				const webhook : QTypes.Webhook = createWebHookFromTrigger(this);
 				try {
-					await apiRequest.call(this, 'DELETE', '/webhook', body);
+					const fullResponse = await apiRequest.call(this, 'POST', '/webhook', webhook);
+					if (fullResponse.statusCode !== 200){
+						throw new NodeApiError(this.getNode(), { httpCode: fullResponse.statusCode , message: fullResponse.statusMessage ?? "invalid request" });
+					}
+
+					const response = fullResponse.body as QTypes.WebhookUpdateResponse;
+					if (response.affected === undefined || response.affected === 0) {
+						// Required data is missing so was not successful
+						return false;
+					}
+
+					webhookData.webhookUrl = webhook.url;
 					return true;
 				} catch {
 					return false;
 				}
+			},
+			async delete(this: IHookFunctions): Promise<boolean> {
+				const webhookData = this.getWorkflowStaticData('node');
+				if (webhookData.webhookUrl !== undefined) {
+					const body = { url: webhookData.webhookUrl, };
+					try {
+						const fullResponse = await apiRequest.call(this, 'DELETE', '/webhook', body);
+						if (fullResponse.statusCode !== 200){
+							throw new NodeApiError(this.getNode(), { httpCode: fullResponse.statusCode , message: fullResponse.statusMessage ?? "invalid request" });
+						}
+
+						const response = fullResponse.body as QTypes.WebhookUpdateResponse;
+						if (response.affected === undefined || response.affected === 0) {
+							// Required data is missing so was not successful
+							return false;
+						}
+
+						// Remove from the static workflow data so that it is clear
+						// that no webhooks are registred anymore
+						delete webhookData.webhookUrl;
+
+						return true;
+					} catch {
+						return false;
+					}
+				}
+				return true;
 			},
 		},
 	};
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData>
 	{
+		// checking for malicius bots
+		const realm = 'Webhook';
+		const resp = this.getResponseObject();
 		const headers = this.getHeaderData();
-		const body = this.getBodyData();
+		const userAgent = (headers as IDataObject)['user-agent'] as string;
 
-		const response: INodeExecutionData = {
-			json: {
-				headers,
-				body,
-			},
-		};
-
-		try {
-			// checking for malicius bots
-			const realm = 'Webhook';
-			const resp = this.getResponseObject();
-			const userAgent = (headers as IDataObject)['user-agent'] as string;
-
-			if (!userAgent.startsWith("Quepasa") && isbot(userAgent)) {
-				return authorizationError(resp, realm, 403);
-			}
-
-			const showHeaders = this.getNodeParameter('showHeaders') as boolean;
-			if(!showHeaders){
-				delete response.json.headers;
-			}
-
-		} catch (error) {
-			response.json.error = error;
+		if (!userAgent.startsWith("Quepasa") && isbot(userAgent)) {
+			return authorizationError(resp, realm, 403);
 		}
 
-		// Return all the data that got received
+		const req = this.getRequestObject();
+
 		return {
-			workflowData: [
-				[
-					response,
-				],
-			],
+			workflowData: [this.helpers.returnJsonArray(req.body)],
 		};
 	}
 }

@@ -10,9 +10,9 @@ import {
 import type { Quepasa as QTypes } from '../types';
 
 export async function resourceWebhook(this: IExecuteFunctions, operation: string, items: any, i: number): Promise<any> { // tslint:disable-line:no-any
-	let responseData;
+	let fullResponse;
 	if (operation === 'find') {
-		responseData = await apiRequest.call(this, 'GET', '/webhook');
+		fullResponse = await apiRequest.call(this, 'GET', '/webhook');
 	}
 	else if (operation === 'setup'){
 		const reqBody: QTypes.Webhook = {
@@ -32,17 +32,17 @@ export async function resourceWebhook(this: IExecuteFunctions, operation: string
 
 			reqBody.extra = data;
 		}
-		responseData = await apiRequest.call(this, 'POST', '/webhook', reqBody);
+		fullResponse = await apiRequest.call(this, 'POST', '/webhook', reqBody);
 	}
 	else if (operation === 'remove') {
 		const body: QTypes.Webhook = {
 			url: this.getNodeParameter('url', i) as string,
 		};
-		responseData = await apiRequest.call(this, 'DELETE', '/webhook', body);
+		fullResponse = await apiRequest.call(this, 'DELETE', '/webhook', body);
 	}
 	else if (operation === 'clear') {
-		responseData = await apiRequest.call(this, 'DELETE', '/webhook');
+		fullResponse = await apiRequest.call(this, 'DELETE', '/webhook');
 	}
 
-	return responseData;
+	return fullResponse?.body;
 }

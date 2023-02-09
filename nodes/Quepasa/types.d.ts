@@ -1,3 +1,5 @@
+import { IDataObject } from "n8n-workflow";
+
 export declare namespace Quepasa {
 
 	export type Resource = 'information' | 'message' | 'webhook' | 'control';
@@ -19,8 +21,21 @@ export declare namespace Quepasa {
 		status: string;
 	}
 
-	export type GetWebhookResponse = Response & {
+	export type ResponseWithHeaders = Response & {
+		headers?: IDataObject[];
+	}
+
+	export type ResponseGeneric = ResponseWithHeaders & {
+		body: any;
+	}
+
+	export type WebhookGetResponse = ResponseWithHeaders & {
 		webhooks?: Webhook[];
+	}
+
+	// POST | DELETE
+	export type WebhookUpdateResponse = ResponseWithHeaders & {
+		affected?: number;
 	}
 
 	export type Webhook = {

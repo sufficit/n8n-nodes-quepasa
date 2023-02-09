@@ -5,7 +5,7 @@ import {
 	IHttpRequestMethods,
 	IHttpRequestOptions,
 	ILoadOptionsFunctions,
-	IN8nHttpResponse,
+	IN8nHttpFullResponse,
 } from 'n8n-workflow';
 
 import {
@@ -19,7 +19,7 @@ import type { Quepasa as QTypes } from './types';
 // used from webhook authorization, avoid bots
 import { Response } from 'express';
 
-export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions, method: IHttpRequestMethods, endpoint: QTypes.Endpoint = '', body: any = {}, qs: IDataObject = {}, uri?: string, headers: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
+export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions, method: IHttpRequestMethods, endpoint: QTypes.Endpoint = '', body: any = {}, qs: IDataObject = {}, uri?: string, headers: IDataObject = {}): Promise<IN8nHttpFullResponse> { // tslint:disable-line:no-any
 	let baseUrl = this.getNodeParameter('baseUrl', 0, '') as string;
 	let token = this.getNodeParameter('token', 0, '') as string;
 
@@ -39,6 +39,7 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 		qs,
 		url: uri || fullUri,
 		timeout: 15000, // changing default timeout to 15 seconds. avoid thread lock
+		returnFullResponse: true, // return IN8nHttpFullResponse
 	};
 
 	if (endpoint === '/download' || endpoint === '/picdata') {
@@ -63,13 +64,27 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 	}
 
 	try {
-		const response: IN8nHttpResponse = await this.helpers.httpRequest(options);
+		return await this.helpers.httpRequest(options) as IN8nHttpFullResponse;
+
+		/*
+		const fullResponse = response as IN8nHttpFullResponse;
+		if (fullResponse){
+			return {
+				headers: fullResponse.headers,
+				data: fullResponse.body,
+			};
+		} else {
+
+		}
+
 		if (endpoint === '/download' || endpoint === '/picdata') {
+
 			return {
 				data: response,
 			};
 		}
 		return response;
+		*/
 	} catch (error) {
 		if (error.response?.data) {
 			const requestError: QTypes.RequestError = {
@@ -149,4 +164,17 @@ export function createWebHookFromTrigger(source: IHookFunctions): QTypes.Webhook
 	}
 
 	return reqBody;
+}
+
+export function getFileNameFromHeaderContent(source: IDataObject): string | undefined {
+	if(source) {
+		const disposition = source['content-disposition'] as string;
+		if (disposition && disposition.indexOf('attachment') !== -1) {
+			const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+			const matches = filenameRegex.exec(disposition);
+				if (matches != null && matches[1]) {
+					return matches[1].replace(/['"]/g, '');
+				}
+		}
+	}
 }

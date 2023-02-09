@@ -2,17 +2,19 @@ import {
 	IBinaryKeyData,
 	IDataObject,
 	IExecuteFunctions,
+	IN8nHttpFullResponse,
 	INodeExecutionData,
 } from 'n8n-workflow';
 
 import {
 	apiRequest,
+	getFileNameFromHeaderContent,
 } from '../GenericFunctions';
 
 export async function resourceControl(this: IExecuteFunctions, operation: string, items: any, i: number): Promise<any> { // tslint:disable-line:no-any
 	const paramChatId = this.getNodeParameter('chatId', i) as string;
 
-	let responseData;
+	let fullResponse: IN8nHttpFullResponse;
 	if (operation === 'picture') {
 		const paramBinary = this.getNodeParameter('binary', i, false) as boolean;
 		const paramPictureId = this.getNodeParameter('pictureId', i, '') as string;
@@ -24,7 +26,7 @@ export async function resourceControl(this: IExecuteFunctions, operation: string
 			reqQuery['pictureid'] = paramPictureId;
 		}
 
-		responseData = await apiRequest.call(this, 'GET', endpoint, {}, reqQuery);
+		fullResponse = await apiRequest.call(this, 'GET', endpoint, {}, reqQuery);
 		if (paramBinary) {
 			const itemsData: IBinaryKeyData = {};
 
@@ -35,25 +37,30 @@ export async function resourceControl(this: IExecuteFunctions, operation: string
 				Object.assign(itemsData, items[i].binary);
 			}
 
+			let fileName: string | undefined = this.getNodeParameter('fileName', i) as string;
+			if (!fileName) {
+				fileName = getFileNameFromHeaderContent(fullResponse.headers);
+			}
+
+			const binaryData = await this.helpers.prepareBinaryData(fullResponse.body, fileName || "unknownFileName");
+			const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+
 			const responseItem: INodeExecutionData = {
 				json: items[i].json,
 				binary: itemsData,
 			};
-
+			responseItem.binary![binaryPropertyName] = binaryData;
 			items[i] = responseItem;
-
-			const fileName = this.getNodeParameter('fileName', i) as string;
-			const binaryData = await this.helpers.prepareBinaryData(responseData.data, fileName || "unknownFileName");
-
-			const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-			items[i].binary![binaryPropertyName] = binaryData;
+			return;
 		}
 	}
 	else if (operation === 'invite'){
 		const reqQuery: IDataObject = {}; // tslint:disable-line:no-any
 		reqQuery['chatid'] = paramChatId;
-		responseData = await apiRequest.call(this, 'GET', '/invite', {}, reqQuery);
+		fullResponse = await apiRequest.call(this, 'GET', '/invite', {}, reqQuery) as IN8nHttpFullResponse;
+		return fullResponse.body;
 	}
-
-	return responseData;
+	else {
+		throw new Error('Operation not implemented: ' + operation);
+	}
 }

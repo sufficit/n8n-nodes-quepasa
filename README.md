@@ -10,6 +10,14 @@ To make your custom node available to the community, you must create it as an np
 
 * change default query timeout to 15000 ms to avoid thread locks
 
+## Version Changes (0.1.53)
+
+* adjust for accept binary headers informations
+
+## Version Changes (0.1.56)
+
+* issue on quepasa trriger
+
 ## Prerequisites
 
 You need the following installed on your development machine:
