@@ -65,24 +65,17 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 
 	try {
 		return await this.helpers.httpRequest(options) as IN8nHttpFullResponse;
-	} catch (innerException) {
+	}
+	catch (innerException)
+	{
+		const status = innerException.response?.data?.string as string || undefined;
 		const exception: QTypes.RequestError = {
 			success: false,
-			status: innerException.status,
+			status: status ?? "unknown error",
 			name: innerException.name,
 			message: innerException.message,
 			config: innerException.config,
 		};
-
-		const status = innerException.response?.data?.string as string || undefined;
-		if (status) {
-			exception.status = status;
-
-			if(!exception.message) {
-				exception.message = exception.status;
-			}
-		}
-
 		throw exception;
 	}
 }

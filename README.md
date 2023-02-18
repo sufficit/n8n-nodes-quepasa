@@ -22,6 +22,10 @@ To make your custom node available to the community, you must create it as an np
 
 * download endpoint to v4 with messageid paramater
 
+## Version Changes (0.1.58)
+
+* error status message
+
 ## Prerequisites
 
 You need the following installed on your development machine:
