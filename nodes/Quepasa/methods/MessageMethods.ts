@@ -18,8 +18,8 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 	let fullResponse: IN8nHttpFullResponse;
 	if (operation === 'download') {
 		const qs: IDataObject = {};
-		const objectId = this.getNodeParameter('messageId', i) as string;
-		qs.id = objectId;
+		const messageid = this.getNodeParameter('messageId', i) as string;
+		qs.messageid = messageid;
 		fullResponse = await apiRequest.call(this, 'GET', '/download', {}, qs);
 
 		const itemsData: IBinaryKeyData = {};

@@ -65,38 +65,25 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 
 	try {
 		return await this.helpers.httpRequest(options) as IN8nHttpFullResponse;
+	} catch (innerException) {
+		const exception: QTypes.RequestError = {
+			success: false,
+			status: innerException.status,
+			name: innerException.name,
+			message: innerException.message,
+			config: innerException.config,
+		};
 
-		/*
-		const fullResponse = response as IN8nHttpFullResponse;
-		if (fullResponse){
-			return {
-				headers: fullResponse.headers,
-				data: fullResponse.body,
-			};
-		} else {
+		const status = innerException.response?.data?.string as string || undefined;
+		if (status) {
+			exception.status = status;
 
+			if(!exception.message) {
+				exception.message = exception.status;
+			}
 		}
 
-		if (endpoint === '/download' || endpoint === '/picdata') {
-
-			return {
-				data: response,
-			};
-		}
-		return response;
-		*/
-	} catch (error) {
-		if (error.response?.data) {
-			const requestError: QTypes.RequestError = {
-				success: false,
-				status: error.response.data.status,
-				name: error.name,
-				message: error.message,
-				config: error.config,
-			};
-			throw requestError;
-		}
-		throw error;
+		throw exception;
 	}
 }
 

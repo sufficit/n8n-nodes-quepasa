@@ -16,7 +16,11 @@ To make your custom node available to the community, you must create it as an np
 
 ## Version Changes (0.1.56)
 
-* issue on quepasa trriger
+* issue on quepasa trigger
+
+## Version Changes (0.1.57)
+
+* download endpoint to v4 with messageid paramater
 
 ## Prerequisites
 
