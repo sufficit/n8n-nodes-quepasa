@@ -35,7 +35,7 @@ export class Quepasa implements INodeType {
 			displayName: 'Quepasa (Whatsapp)',
 			name: 'quepasa',
 			// eslint-disable-next-line n8n-nodes-base/node-class-description-icon-not-svg
-			icon: 'file:favicon.png',
+			icon: 'file:quepasa.png',
 			group: ['output'],
 			version: 1,
 			subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
