@@ -6,25 +6,21 @@ This repo contains example nodes to help you get started building your own custo
 
 To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
 
-## Version Changes (0.1.38)
+## Version Changes (0.1.62)
 
-* change default query timeout to 15000 ms to avoid thread locks
+* revoke message
 
-## Version Changes (0.1.53)
+## Version Changes (0.1.60)
 
-* adjust for accept binary headers informations
-
-## Version Changes (0.1.56)
-
-* issue on quepasa trigger
-
-## Version Changes (0.1.57)
-
-* download endpoint to v4 with messageid paramater
+* message id on sent
 
 ## Version Changes (0.1.58)
 
 * error status message
+
+## Version Changes (0.1.57)
+
+* download endpoint to v4 with messageid paramater
 
 ## Prerequisites
 
@@ -37,30 +33,6 @@ You need the following installed on your development machine:
 	npm install n8n -g
 	```
 * Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
-
-
-## Using this starter
-
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
-
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-    ```
-    git clone https://github.com/<your organization>/<your-repo-name>.git
-    ```
-3. Run `npm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `npm run lint` to check for errors or `npm run lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
-
-## More information
-
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
 
 ## License
 

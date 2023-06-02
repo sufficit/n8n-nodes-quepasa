@@ -17,28 +17,34 @@ export const messageDescription: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Find',
-				value: 'find',
-				description: 'Get a single message',
-				action: 'Find a message',
-			},
-			{
-				name: 'Where',
-				value: 'where',
-				description: 'Get all messages that match a criteria',
-				action: 'Where a message',
-			},
-			{
 				name: 'Download',
 				value: 'download',
 				description: 'Download a message attachment',
 				action: 'Download a message',
 			},
 			{
+				name: 'Find',
+				value: 'find',
+				description: 'Get a single message',
+				action: 'Find a message',
+			},
+			{
+				name: 'Revoke',
+				value: 'revoke',
+				description: 'Revoke|Cancel|Delete message',
+				action: 'Revoke message',
+			},
+			{
 				name: 'Send',
 				value: 'send',
 				description: 'Send a message',
 				action: 'Send a message',
+			},
+			{
+				name: 'Where',
+				value: 'where',
+				description: 'Get all messages that match a criteria',
+				action: 'Where a message',
 			},
 		],
 		default: 'send',
@@ -91,7 +97,7 @@ export const messageFields: INodeProperties[] = [
 	},
 
 	// --------------------------------------------------------------------------
-	// message:get -> operation:find
+	// message:get -> operation:find,download
 	// --------------------------------------------------------------------------
 	{
 		displayName: 'Message ID',
@@ -104,12 +110,32 @@ export const messageFields: INodeProperties[] = [
 					'message',
 				],
 				operation: [
-					'find', 'download',
+					'find', 'download', 'revoke',
 				],
 			},
 		},
 		default: '',
 		description: 'Unique ID of the message',
+	},
+	// --------------------------------------------------------------------------
+	// message:post -> operation:send
+	// --------------------------------------------------------------------------
+	{
+		displayName: 'Message ID',
+		name: 'messageId',
+		type: 'string',
+		default: '',
+		description: '(Optional) Message identifier, used for check status, revoke or edit messages after sent',
+		displayOptions: {
+			show: {
+				resource: [
+					'message',
+				],
+				operation: [
+					'send',
+				],
+			},
+		},
 	},
 	{
 		displayName: 'Binary Property',

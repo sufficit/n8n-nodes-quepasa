@@ -3,7 +3,7 @@ import { IDataObject } from "n8n-workflow";
 export declare namespace Quepasa {
 
 	export type Resource = 'information' | 'message' | 'webhook' | 'control';
-	export type Endpoint = '' | '/info' | '/webhook' | '/download' | '/sendtext' | '/sendurl' | '/picinfo' | '/picdata' | '/invite';
+	export type Endpoint = '' | '/info' | '/webhook' | '/download' | '/sendtext' | '/sendurl' | '/picinfo' | '/picdata' | '/invite' | '/message';
 
 	export type PathCredentials = {
 		baseUrl: string;
@@ -51,6 +51,7 @@ export declare namespace Quepasa {
 	//
 
 	export type SendRequest = {
+		id?: string;
 		chatid: string;
 		text?: string;
 	};

@@ -52,6 +52,7 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 		const paramChatId =	this.getNodeParameter('chatId', i)		as string;
 		const paramText = 	this.getNodeParameter('text', i, '')	as string;
 		const paramTrackId = this.getNodeParameter('trackId', i, '') as string;
+		const messageid = this.getNodeParameter('messageId', i, '') as string;
 
 		const headers: IDataObject = {};
 		if (paramTrackId && paramTrackId.trim().length > 0) {
@@ -60,6 +61,7 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 
 		if (paramMethod === 'sendtext') {
 			const body: QTypes.SendRequest = {
+				id: messageid,
 				text: paramText,
 				chatid: paramChatId,
 			};
@@ -70,6 +72,7 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 			const paramUrl = this.getNodeParameter('url', i) as string;
 			const paramFileName = this.getNodeParameter('filename', i, '') as string;
 			const body: QTypes.SendAttachmentUrlRequest = {
+				id: messageid,
 				chatid: paramChatId,
 				url: paramUrl,
 				text: paramText,
@@ -80,6 +83,12 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 		} else {
 			throw new Error('Method not implemented: ' + paramMethod);
 		}
+	}
+	else if (operation === 'revoke') {
+		const qs: IDataObject = {};
+		const messageid = this.getNodeParameter('messageId', i) as string;
+		qs.messageid = messageid;
+		fullResponse = await apiRequest.call(this, 'DELETE', '/message', {}, qs);
 	}
 	else if (operation === 'where') {
 		throw new Error('Operation not implemented: ' + operation);
