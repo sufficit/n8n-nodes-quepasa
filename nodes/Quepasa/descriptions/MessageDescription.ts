@@ -174,7 +174,7 @@ export const messageFields: INodeProperties[] = [
 
 		},
 		placeholder: 'downloaded.pdf',
-		description: '(Optional) File name to be outputed if setted',
+		description: '(Optional) File name to output if set',
 	},
 
 	// --------------------------------------------------------------------------
@@ -300,6 +300,23 @@ export const messageFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		description: '(Optional) System identifier, avoid duplicated messages',
+		displayOptions: {
+			show: {
+				resource: [
+					'message',
+				],
+				operation: [
+					'send',
+				],
+			},
+		},
+	},
+	{
+		displayName: 'In Reply To',
+		name: 'inReply',
+		type: 'string',
+		default: '',
+		description: '(Optional) Message Id for reply to',
 		displayOptions: {
 			show: {
 				resource: [

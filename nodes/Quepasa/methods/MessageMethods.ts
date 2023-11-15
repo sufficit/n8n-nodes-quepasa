@@ -52,6 +52,7 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 		const paramChatId =	this.getNodeParameter('chatId', i)		as string;
 		const paramText = 	this.getNodeParameter('text', i, '')	as string;
 		const paramTrackId = this.getNodeParameter('trackId', i, '') as string;
+		const paramInReply = this.getNodeParameter('inReply', i, '') as string;
 		const messageid = this.getNodeParameter('messageId', i, '') as string;
 
 		const headers: IDataObject = {};
@@ -74,6 +75,7 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 			const body: QTypes.SendAttachmentUrlRequest = {
 				id: messageid,
 				chatid: paramChatId,
+				inreply: paramInReply,
 				url: paramUrl,
 				text: paramText,
 				filename: paramFileName,
@@ -88,7 +90,13 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 		const qs: IDataObject = {};
 		const messageid = this.getNodeParameter('messageId', i) as string;
 		qs.messageid = messageid;
-		fullResponse = await apiRequest.call(this, 'DELETE', '/message', {}, qs);
+
+		fullResponse = await apiRequest.call(this, 'DELETE', '/message', {}, qs)
+		.then((response) => {
+			return response;
+		}).catch((error) => {
+			return error.response ?? error;
+		});
 	}
 	else if (operation === 'where') {
 		throw new Error('Operation not implemented: ' + operation);

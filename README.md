@@ -6,6 +6,10 @@ This repo contains example nodes to help you get started building your own custo
 
 To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
 
+## Version Changes (0.1.64)
+
+* in reply to messages
+
 ## Version Changes (0.1.62)
 
 * revoke message

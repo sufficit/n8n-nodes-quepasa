@@ -54,6 +54,7 @@ export declare namespace Quepasa {
 		id?: string;
 		chatid: string;
 		text?: string;
+		inreply?: string;
 	};
 
 	export type SendAttachmentUrlRequest = SendRequest & {
