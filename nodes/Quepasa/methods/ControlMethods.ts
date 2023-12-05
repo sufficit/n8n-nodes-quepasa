@@ -6,6 +6,8 @@ import {
 	INodeExecutionData,
 } from 'n8n-workflow';
 
+import type { Readable } from 'stream';
+
 import {
 	apiRequest,
 	getFileNameFromHeaderContent,
@@ -26,7 +28,6 @@ export async function resourceControl(this: IExecuteFunctions, operation: string
 			reqQuery['pictureid'] = paramPictureId;
 		}
 
-		fullResponse = await apiRequest.call(this, 'GET', endpoint, {}, reqQuery);
 		if (paramBinary) {
 			const itemsData: IBinaryKeyData = {};
 
@@ -37,12 +38,14 @@ export async function resourceControl(this: IExecuteFunctions, operation: string
 				Object.assign(itemsData, items[i].binary);
 			}
 
+			fullResponse = await apiRequest.call(this, 'GET', endpoint, {}, reqQuery);
 			let fileName: string | undefined = this.getNodeParameter('fileName', i) as string;
 			if (!fileName) {
 				fileName = getFileNameFromHeaderContent(fullResponse.headers);
 			}
 
-			const binaryData = await this.helpers.prepareBinaryData(fullResponse.body, fileName || "unknownFileName");
+			const buffer = fullResponse.body as Buffer | Readable;
+			const binaryData = await this.helpers.prepareBinaryData(buffer, fileName || "unknownFileName");
 			const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
 
 			const responseItem: INodeExecutionData = {

@@ -15,9 +15,14 @@
         "TRACKID"
     ],
     "ignoreWords": [
+        "isbot",
+        "lintfix",
+        "luxon",
         "picdata",
         "picinfo",
-        "sendurl"
+        "pictureid",
+        "sendurl",
+        "universalify"
     ],
     "import": []
 }

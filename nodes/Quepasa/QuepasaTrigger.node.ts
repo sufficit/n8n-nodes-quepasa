@@ -95,6 +95,7 @@ export class QuepasaTrigger implements INodeType {
 				displayName: 'Token',
 				name: 'token',
 				type: 'string',
+				typeOptions: { password: true },
 				default: '',
 				required: true,
 				description: 'Token of Whatsapp bot, override credentials',
@@ -252,7 +253,7 @@ export class QuepasaTrigger implements INodeType {
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData>
 	{
-		// checking for malicius bots
+		// checking for malicious bots
 		const realm = 'Webhook';
 		const resp = this.getResponseObject();
 		const headers = this.getHeaderData();

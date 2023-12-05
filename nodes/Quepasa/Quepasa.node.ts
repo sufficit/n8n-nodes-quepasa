@@ -99,6 +99,7 @@ export class Quepasa implements INodeType {
 					displayName: 'Token',
 					name: 'token',
 					type: 'string',
+					typeOptions: { password: true },
 					default: '',
 					required: true,
 					description: 'Token of Whatsapp bot, override credentials',

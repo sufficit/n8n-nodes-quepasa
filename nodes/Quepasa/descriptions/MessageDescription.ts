@@ -316,7 +316,7 @@ export const messageFields: INodeProperties[] = [
 		name: 'inReply',
 		type: 'string',
 		default: '',
-		description: '(Optional) Message Id for reply to',
+		description: '(Optional) Message ID for reply to',
 		displayOptions: {
 			show: {
 				resource: [

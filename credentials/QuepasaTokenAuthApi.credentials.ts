@@ -20,6 +20,7 @@ export class QuepasaTokenAuthApi implements ICredentialType {
 			displayName: 'Access Token',
 			name: 'accessToken',
 			type: 'string',
+			typeOptions: { password: true },
 			placeholder: "00000000-0000-0000-0000-000000000000",
 			default: '',
 			required: true,
