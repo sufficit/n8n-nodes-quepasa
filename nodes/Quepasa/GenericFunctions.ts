@@ -6,6 +6,7 @@ import {
 	IHttpRequestOptions,
 	ILoadOptionsFunctions,
 	IN8nHttpFullResponse,
+	NodeApiError,
 } from 'n8n-workflow';
 
 import {
@@ -69,14 +70,7 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 	catch (innerException)
 	{
 		const status = innerException.response?.data?.string as string || undefined;
-		const exception: QTypes.RequestError = {
-			success: false,
-			status: status ?? "unknown error",
-			name: innerException.name,
-			message: innerException.message,
-			config: innerException.config,
-		};
-		throw exception;
+		throw new NodeApiError(this.getNode(), innerException);
 	}
 }
 
@@ -128,7 +122,7 @@ export function createWebHookFromTrigger(source: IHookFunctions): QTypes.Webhook
 	const reqBody : QTypes.Webhook = {
 		url: source.getNodeWebhookUrl('default')!,
 		forwardinternal: source.getNodeParameter('forwardInternal', false) as boolean,
-		trackid: source.getNodeParameter('trackId', '') as string ?? undefined,
+		trackid: source.getNodeParameter('trackid', '') as string ?? undefined,
 	};
 
 	const parExtraAttributes = source.getNodeParameter('extraAttributes', {}) as IDataObject;

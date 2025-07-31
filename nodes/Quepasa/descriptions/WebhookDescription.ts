@@ -82,7 +82,7 @@ export const webhookFields: INodeProperties[] = [
 	},
 	{
 		displayName: 'Track ID',
-		name: 'trackId',
+		name: 'trackid',
 		type: 'string',
 		default: '',
 		description: '(Optional) System identifier, avoid duplicated messages',

@@ -18,7 +18,7 @@ export async function resourceWebhook(this: IExecuteFunctions, operation: string
 		const reqBody: QTypes.Webhook = {
 			url: this.getNodeParameter('url', i) as string,
 			forwardinternal: this.getNodeParameter('forwardInternal', i) as boolean,
-			trackid: this.getNodeParameter('trackId', i) as string,
+			trackid: this.getNodeParameter('trackid', i) as string,
 		};
 
 		const parExtraAttributes = this.getNodeParameter('extraAttributes',i , {}) as IDataObject;

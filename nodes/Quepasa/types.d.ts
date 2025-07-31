@@ -1,9 +1,15 @@
-import { IDataObject } from "n8n-workflow";
+import {
+	IDataObject,
+	INode,
+	JsonObject,
+	NodeError,
+ } from "n8n-workflow";
 
 export declare namespace Quepasa {
 
+	export type SendMethod = 'sendany' | 'sendtext' | 'sendurl' | 'sendencoded' | 'sendbinary';
 	export type Resource = 'information' | 'message' | 'webhook' | 'control';
-	export type Endpoint = '' | '/info' | '/webhook' | '/download' | '/sendtext' | '/sendurl' | '/picinfo' | '/picdata' | '/invite' | '/message';
+	export type Endpoint = '' | '/info' | '/webhook' | '/download' | '/send' | '/sendbinary' | '/picinfo' | '/picdata' | '/invite' | '/message';
 
 	export type PathCredentials = {
 		baseUrl: string;
@@ -50,22 +56,20 @@ export declare namespace Quepasa {
 	// message:send -> operation:send methods
 	//
 
-	export type SendRequest = {
+	export type SendRequestJsonBody = {
 		id?: string;
-		chatid: string;
 		text?: string;
 		inreply?: string;
-	};
 
-	export type SendAttachmentUrlRequest = SendRequest & {
-		url: string;
+		// file options
 		filename?: string;
-	};
+		filelength?: number;
+		mime?: string;
 
-	//
-	// --------------------------------------------------------------------------
+		// URL for download content
+		url?: string;
 
-	export type RequestError = Error & Response & {
-		config: any;
+		// BASE64 content
+		content?: string;
 	};
 }

@@ -14,7 +14,7 @@ import {
 } from '../GenericFunctions';
 
 export async function resourceControl(this: IExecuteFunctions, operation: string, items: any, i: number): Promise<any> { // tslint:disable-line:no-any
-	const paramChatId = this.getNodeParameter('chatId', i) as string;
+	const paramChatId = this.getNodeParameter('chatid', i) as string;
 
 	let fullResponse: IN8nHttpFullResponse;
 	if (operation === 'picture') {

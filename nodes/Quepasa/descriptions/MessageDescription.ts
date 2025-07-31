@@ -101,7 +101,7 @@ export const messageFields: INodeProperties[] = [
 	// --------------------------------------------------------------------------
 	{
 		displayName: 'Message ID',
-		name: 'messageId',
+		name: 'messageid',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -122,7 +122,7 @@ export const messageFields: INodeProperties[] = [
 	// --------------------------------------------------------------------------
 	{
 		displayName: 'Message ID',
-		name: 'messageId',
+		name: 'messageid',
 		type: 'string',
 		default: '',
 		description: '(Optional) Message identifier, used for check status, revoke or edit messages after sent',
@@ -152,7 +152,6 @@ export const messageFields: INodeProperties[] = [
 					'download',
 				],
 			},
-
 		},
 		placeholder: '',
 		description: 'Name of the binary property which contains the data for the file to be created',
@@ -197,23 +196,49 @@ export const messageFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Send Text',
-				value: 'sendtext',
+				name: 'Send Any',
+				value: 'sendany',
 			},
 			{
-				name: 'Send Attachment By Url',
-				value: 'sendurl',
+				name: 'Send Attachment Base64',
+				value: 'sendencoded',
 			},
 			{
 				name: 'Send Attachment Binary',
 				value: 'sendbinary',
 			},
 			{
-				name: 'Send Attachment Base64',
-				value: 'sendencoded',
+				name: 'Send Attachment By Url',
+				value: 'sendurl',
+			},
+			{
+				name: 'Send Text',
+				value: 'sendtext',
 			},
 		],
-		default: 'sendtext',
+		default: 'sendany',
+	},
+	{
+		displayName: 'Binary Property',
+		name: 'binaryPropertyName',
+		type: 'string',
+		default: 'data',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: [
+					'message',
+				],
+				operation: [
+					'send',
+				],
+				method:[
+					'sendbinary'
+				],
+			},
+		},
+		placeholder: '',
+		description: 'Name of the binary property which contains the data for the file to be created',
 	},
 	{
 		displayName: 'Text',
@@ -228,7 +253,7 @@ export const messageFields: INodeProperties[] = [
 					'send',
 				],
 				method:[
-					'sendtext', 'sendurl',
+					'sendany', 'sendtext', 'sendurl', 'sendencoded',
 				],
 			},
 		},
@@ -237,7 +262,7 @@ export const messageFields: INodeProperties[] = [
 	},
 	{
 		displayName: 'Chat ID',
-		name: 'chatId',
+		name: 'chatid',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -252,6 +277,67 @@ export const messageFields: INodeProperties[] = [
 		},
 		default: '',
 		description: 'Destination conversation, ChatId Group or any E164 Phone Number',
+	},
+	{
+		displayName: 'BASE64 Content',
+		name: 'content',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'message',
+				],
+				operation: [
+					'send',
+				],
+				method: [
+					'sendany',
+				],
+			},
+		},
+		default: '',
+		description: '(Optional) BASE64 content to append attachment',
+	},
+	{
+		displayName: 'BASE64 Content',
+		name: 'content',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: [
+					'message',
+				],
+				operation: [
+					'send',
+				],
+				method: [
+					'sendencoded',
+				],
+			},
+		},
+		default: '',
+		description: 'BASE64 content to append attachment',
+	},
+	{
+		displayName: 'Url',
+		name: 'url',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'message',
+				],
+				operation: [
+					'send',
+				],
+				method: [
+					'sendany'
+				],
+			},
+		},
+		default: '',
+		description: '(Optional) URL path to append attachment',
 	},
 	{
 		displayName: 'Url',
@@ -287,16 +373,58 @@ export const messageFields: INodeProperties[] = [
 					'send',
 				],
 				method: [
-					'sendurl', 'sendbinary', 'sendencoded',
+					'sendany', 'sendurl', 'sendbinary', 'sendencoded',
 				],
 			},
 		},
 		default: '',
-		description: 'File name and extension, auto-generated',
+		description: '(Optional) File name and extension, auto-generated',
+	},
+	{
+		displayName: 'MIME',
+		name: 'mime',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'message',
+				],
+				operation: [
+					'send',
+				],
+				method: [
+					'sendany', 'sendurl', 'sendbinary', 'sendencoded',
+				],
+			},
+		},
+		placeholder: 'application/pdf',
+		default: '',
+		description: '(Optional) MIME',
+	},
+	{
+		displayName: 'File Length',
+		name: 'filelength',
+		type: 'number',
+		displayOptions: {
+			show: {
+				resource: [
+					'message',
+				],
+				operation: [
+					'send',
+				],
+				method: [
+					'sendany', 'sendurl', 'sendbinary', 'sendencoded',
+				],
+			},
+		},
+		placeholder: '00000000',
+		default: '',
+		description: '(Optional) Content Bytes',
 	},
 	{
 		displayName: 'Track ID',
-		name: 'trackId',
+		name: 'trackid',
 		type: 'string',
 		default: '',
 		description: '(Optional) System identifier, avoid duplicated messages',
@@ -313,7 +441,7 @@ export const messageFields: INodeProperties[] = [
 	},
 	{
 		displayName: 'In Reply To',
-		name: 'inReply',
+		name: 'inreply',
 		type: 'string',
 		default: '',
 		description: '(Optional) Message ID for reply to',

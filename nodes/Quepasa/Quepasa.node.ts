@@ -8,7 +8,8 @@ import {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
-	NodeApiError,
+	NodeError,
+	NodeOperationError,
 } from 'n8n-workflow';
 
 import {
@@ -223,7 +224,11 @@ export class Quepasa implements INodeType {
 					}
 					continue;
 				}
-				throw new NodeApiError(this.getNode(), error);
+
+				if (error instanceof NodeError)
+					throw error;
+				else
+					throw new NodeOperationError(this.getNode(), error);
 			}
 		}
 

@@ -117,7 +117,7 @@ export class QuepasaTrigger implements INodeType {
 			},
 			{
 				displayName: 'Track ID',
-				name: 'trackId',
+				name: 'trackid',
 				type: 'string',
 				default: '',
 				description: '(Optional) System identifier, avoid duplicated messages',

@@ -36,7 +36,7 @@ export const controlDescription: INodeProperties[] = [
 export const controlFields: INodeProperties[] = [
 	{
 		displayName: 'Chat ID',
-		name: 'chatId',
+		name: 'chatid',
 		type: 'string',
 		required: true,
 		displayOptions: {
