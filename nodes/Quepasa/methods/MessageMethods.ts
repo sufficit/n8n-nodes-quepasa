@@ -56,7 +56,7 @@ export async function resourceMessage(this: IExecuteFunctions, operation: string
 		const headers: IDataObject = {};
 
 		const chatid = this.getNodeParameter('chatid', i)		as string;
-		if (!chatid || chatid.trim().length === 0)
+		if (!chatid || chatid.trim().length === 0 || chatid.trim() === 'null' || chatid.trim() === 'undefined')
 			throw new Error('missing chat id');
 
 		headers['X-QUEPASA-CHATID'] = chatid.trim();
